@@ -16,6 +16,11 @@ db = firestore.client()
 # 初始化 Flask
 app = Flask(__name__)
 
+# 添加根路徑路由
+@app.route("/")
+def home():
+    return "Welcome to my Flask app on Render!"
+
 # LINE Bot 設定
 LINE_ACCESS_TOKEN = "u0JN7NJkL2RuZ3N9zxys5CvUJjsb8ScXfpKkoClrl2CjHFIBGGicZ7MYf5/N1to+5CUl+zYwCMHvjTTtrl+sc1+r2uV1LKEwE+EqISi1bkOpw6l5xvEVsQZiz/7PG/vrqSUKXMQNufLxpGoSP+6AiAdB04t89/1O/w1cDnyilFU="
 LINE_CHANNEL_SECRET = "751e2fb4f0320a37836474ce86d89eb9"
@@ -83,4 +88,4 @@ def handle_message(event):
 
 # 啟動 Flask 伺服器
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=10000, debug=True)
