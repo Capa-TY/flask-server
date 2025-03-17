@@ -9,7 +9,7 @@ import requests  # 用於呼叫 OpenRouter API
 import json
 
 # 初始化 Firebase
-cred = credentials.Certificate("/Users/yue/Desktop/AIstock/stockgpt-150d0-firebase-adminsdk-fbsvc-9ea0d3c5ec.json")  # 替換為你的密鑰
+cred = credentials.Certificate("stockgpt-150d0-firebase-adminsdk-fbsvc-9ea0d3c5ec.json")  # 替換為你的密鑰
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
