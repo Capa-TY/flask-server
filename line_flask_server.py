@@ -39,7 +39,7 @@ def get_openrouter_response(user_message):
         {"role": "system", "content": "你是一位專業的財經顧問，擅長股市分析與技術分析。"},
         {"role": "user", "content": user_message}
         ],
-        "temperature": 0.7    #AI 回應的隨機性，值越高他越有創意
+        "temperature": 0.7    #代表AI回應的隨機性，值越高他越有創意
     }
     response = requests.post(OPENROUTER_URL, json=data, headers=headers)
     if response.status_code == 200:
