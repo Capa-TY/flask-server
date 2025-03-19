@@ -72,7 +72,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_id = event.source.user_id
-    user_message = event.message.text
+    user_message = event.message.text.strip()
 
     # 存入 Firebase Firestore
     doc_ref = db.collection("users").document(user_id)
@@ -90,6 +90,7 @@ def handle_message(event):
         if company in user_message and "預測" in user_message:
             matched_stock=stock_code
             break
+    #如果有匹配的公司，就去 Firebase 讀取股價預測
     if matched_stock:
         doc_ref=db.collection("stock_predictions").document(matched_stock)
         doc=doc_ref.get()
@@ -98,9 +99,9 @@ def handle_message(event):
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
             reply_text = f"{company}預測的股價為：{prediction} 元"
         else:
-            reply_text = "⚠️ 目前沒有{company}的預測數據，請稍後再試。"
+            reply_text = f"⚠️ 目前沒有{company}的預測數據，請稍後再試。"
 
-    # 取得 AI 生成的回覆
+    # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
         reply_text = get_openrouter_response(user_message)
     # 回應使用者
