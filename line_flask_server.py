@@ -79,12 +79,32 @@ def handle_message(event):
     doc_ref.set({
         "message": user_message
     }, merge=True)
+    
+    stock_mapping={
+        "台積電":"2330.TW",
+        "鴻海":"2317.TW",
+        "聯電":"2303.TW"
+    }
+    matched_stock=None
+    for company,stock_code in stock_mapping.items():
+        if company in user_message and "預測" in user_message:
+            matched_stock=stock_code
+            break
+    if matched_stock:
+        doc_ref=db.collection("stock_predictions").document(matched_stock)
+        doc=doc_ref.get()
+
+        if doc.exists:
+            prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
+            reply_text = f"{company}預測的股價為：{prediction} 元"
+        else:
+            reply_text = "⚠️ 目前沒有{company}的預測數據，請稍後再試。"
 
     # 取得 AI 生成的回覆
-    ai_reply = get_openrouter_response(user_message)
-    print("Ai助理：",ai_reply)
+    else:
+        reply_text = get_openrouter_response(user_message)
     # 回應使用者
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=ai_reply))
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
 # 啟動 Flask 伺服器
 if __name__ == "__main__":
