@@ -7,6 +7,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import requests  # 用於呼叫 OpenRouter API
 import json
+from datetime import datetime, timedelta
 
 # 初始化 Firebase
 cred = credentials.Certificate("stockgpt-150d0-firebase-adminsdk-fbsvc-9ea0d3c5ec.json")  # 替換為你的密鑰
@@ -68,6 +69,9 @@ def callback():
 
     return "OK", 200
 
+today = datetime.now()
+today_str = today.strftime("%m月%d日")
+tomorrow_str = (today + timedelta(days=1)).strftime("%m月%d日")
 # 處理來自 LINE 的訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -97,7 +101,7 @@ def handle_message(event):
 
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
-            reply_text = f"{company}預測的股價為：{prediction} 元"
+            reply_text = f"今天是{today_str}{company} 預測的股價為：{prediction} 元"
         else:
             reply_text = f"⚠️ 目前沒有{company}的預測數據，請稍後再試。"
 
@@ -106,7 +110,7 @@ def handle_message(event):
         reply_text = get_openrouter_response(user_message)
     # 回應使用者
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
-
+print(today_str)
 # 啟動 Flask 伺服器
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
