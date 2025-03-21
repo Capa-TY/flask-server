@@ -101,18 +101,18 @@ def handle_message(event):
 
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
-            date=doc.to_dict().get("last_updated", "無法獲取預測數據")
+            date=doc.to_dict().get("last_updated", "無法獲取預測數據")#如果成功獲取到值，則將其賦值給變數 date。果文件中不存在 "last_updated" 欄位，則將 date 設定為預設值 "無法獲取預測數據"。
             reply_text = f"今天是{date}\n{company} 預測的股價為：\n{prediction} 元"
         else:
             reply_text = f"⚠️ 目前沒有{company}的預測數據，請稍後再試。"
 
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
-        print("請稍候，正在分析問題中......\n")
-        reply_text = get_openrouter_response(user_message)
+        reply_text ="請稍候，分析問題中......\n"
+        reply_text += get_openrouter_response(user_message)
     # 回應使用者
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
-print(today_str)
+
 # 啟動 Flask 伺服器
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
