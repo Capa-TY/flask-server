@@ -101,7 +101,8 @@ def handle_message(event):
 
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
-            reply_text = f"今天是{today_str}\n{company} 預測的股價為：\n{prediction} 元"
+            date=doc.to_dict().get("last_updated", "無法獲取預測數據")
+            reply_text = f"今天是{date}\n{company} 預測的股價為：\n{prediction} 元"
         else:
             reply_text = f"⚠️ 目前沒有{company}的預測數據，請稍後再試。"
 
