@@ -108,6 +108,7 @@ def handle_message(event):
 
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
+        print("請稍候，正在分析問題中......\n")
         reply_text = get_openrouter_response(user_message)
     # 回應使用者
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
