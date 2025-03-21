@@ -108,14 +108,10 @@ def handle_message(event):
 
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
-        
         reply_text = get_openrouter_response(user_message)
-        messages = [
-            TextSendMessage(text="請稍候，分析問題中......")  ,# 新增的消息
-            TextSendMessage(text=reply_text)  # 原始消息
-        ]
+        
     # 回應使用者
-    line_bot_api.reply_message(event.reply_token, messages)
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
 # 啟動 Flask 伺服器
 if __name__ == "__main__":
