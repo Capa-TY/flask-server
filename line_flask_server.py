@@ -101,7 +101,7 @@ def handle_message(event):
         doc=doc_ref.get()
         sentiment_ref=db.collection("news").document(company)
         sentiment=sentiment_ref.get()
-        sentiment_score=sentiment.to_dict().get("daliy_averages",{})
+        sentiment_score=sentiment.to_dict().get("daily_averages",{}).get(date, 0)
         if(-0.3<sentiment_score<0):
             result="經整合分析，今日新聞較消極、負面"
         elif(0<sentiment_score<0.3):
