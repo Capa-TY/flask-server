@@ -106,6 +106,8 @@ def handle_message(event):
             result="經整合分析，今日新聞較消極、負面"
         elif(0<sentiment_score<0.3):
             result="經整合分析，今日新聞較積極、正面"
+        else:
+            result = "經整合分析，今日新聞情緒中性"
         if doc.exists:
             
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
