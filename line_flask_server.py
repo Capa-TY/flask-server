@@ -103,7 +103,6 @@ def handle_message(event):
         
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
-            print(f"📊 取得預測股價: {prediction}")
             #date=doc.to_dict().get("last_updated", "無法獲取預測數據")#如果成功獲取到值，則將其賦值給變數 date。果文件中不存在 "last_updated" 欄位，則將 date 設定為預設值 "無法獲取預測數據"。
             sentiment_ref=db.collection("news").document(company_name)
             sentiment=sentiment_ref.get()
@@ -112,13 +111,14 @@ def handle_message(event):
             else:
                 print(f"⚠️ 沒有找到新聞情緒數據！")
                 sentiment_score=0
-            if -0.3<sentiment_score<0:
-                result="經整合分析，今日新聞較消極、負面"
-            elif 0<sentiment_score<0.3:
-                result="經整合分析，今日新聞較積極、正面"
-            else:
-                result = "經整合分析，今日新聞情緒中性"
-            reply_text = f"今天是{today_str}\n今天{company_name}的情緒分數為{sentiment_score}\n{result}\n{company_name} 預測的股價為：\n{prediction} 元"
+            if -0.5<sentiment_score<0:
+                result="經整合分析，今日新聞較消極、負面📉"
+            elif sentiment_score==0:
+                result = "經整合分析，今日新聞情緒中立"
+            elif 0<sentiment_score<0.5:
+                 result="經整合分析，今日新聞較積極、正面📈"
+            
+            reply_text = f"🗓️今天是{today_str}\n今天{company_name}的情緒分數為{sentiment_score}\n📊{result}\n{company_name}預測的股價為：\n{prediction} 元"
         else:
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，請稍後再試。"
         
@@ -126,7 +126,6 @@ def handle_message(event):
     else:
         reply_text = get_openrouter_response(user_message)
 
-    print(f"💬 回覆訊息: {reply_text}")  # 確保訊息有內容
     # 回應使用者
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
