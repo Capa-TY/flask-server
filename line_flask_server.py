@@ -99,15 +99,15 @@ def handle_message(event):
     if matched_stock:
         doc_ref=db.collection("stock_predictions").document(matched_stock)
         doc=doc_ref.get()
-
+        sentiment_ref=db.collection("news").document(company)
+        sentiment=sentiment_ref.get()
+        sentiment_score=sentiment.to_dict().get("daliy_averages",{})
+        if(-0.3<sentiment_score<0):
+            result="經整合分析，今日新聞較消極、負面"
+        elif(0<sentiment_score<0.3):
+            result="經整合分析，今日新聞較積極、正面"
         if doc.exists:
-            sentiment_ref=db.collection("news").document(company)
-            sentiment=sentiment_ref.get()
-            sentiment_score=sentiment.to_dict().get("daliy_averages",{})
-            if(-0.3<sentiment_score<0):
-                result="經整合分析，今日新聞較消極、負面"
-            elif(0<sentiment_score<0.3):
-                result="經整合分析，今日新聞較積極、正面"
+            
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
             date=doc.to_dict().get("last_updated", "無法獲取預測數據")#如果成功獲取到值，則將其賦值給變數 date。果文件中不存在 "last_updated" 欄位，則將 date 設定為預設值 "無法獲取預測數據"。
             reply_text = f"今天是{date}\n今天{company}的情緒分數為{sentiment_score}\n{result}\n{company} 預測的股價為：\n{prediction} 元"
