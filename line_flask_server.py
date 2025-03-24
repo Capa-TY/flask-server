@@ -42,7 +42,7 @@ def get_openrouter_response(user_message):
     data = {
         "model": "google/gemma-3-27b-it:free",  # 可以更換其他模型
         "messages": [
-        {"role": "system", "content": "你是一位專業的財經顧問，擅長股市分析與技術分析，能夠快速簡潔的分析與回答問題。"},
+        {"role": "system", "content": "你是一位專業的財經顧問，擅長股市分析與技術分析，能夠快速簡潔的分析在十行內回答問題。"},
         {"role": "user", "content": user_message}
         ],
         "temperature": 0.7    #代表AI回應的隨機性，值越高他越有創意
@@ -89,6 +89,13 @@ def handle_message(event):
         "鴻海":"2317.TW",
         "聯電":"2303.TW"
     }
+    sentiment_ref=db.collection("news").document(company)
+    sentiment=sentiment_ref.get()
+    sentiment_score=sentiment.to_dict().get("daliy_averages",{})
+    if(-0.3<sentiment_score<0):
+        result="經整合分析，今日新聞較消極、負面"
+    elif(0<sentiment_score<0.3):
+        result="經整合分析，今日新聞較積極、正面"
     matched_stock=None
     for company,stock_code in stock_mapping.items():
         if company in user_message and "預測" in user_message:#設定關鍵字回覆
@@ -102,7 +109,7 @@ def handle_message(event):
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
             date=doc.to_dict().get("last_updated", "無法獲取預測數據")#如果成功獲取到值，則將其賦值給變數 date。果文件中不存在 "last_updated" 欄位，則將 date 設定為預設值 "無法獲取預測數據"。
-            reply_text = f"今天是{date}\n{company} 預測的股價為：\n{prediction} 元"
+            reply_text = f"今天是{date}\n今天{company}的情緒分數為{sentiment_score}\n{result}\n{company} 預測的股價為：\n{prediction} 元"
         else:
             reply_text = f"⚠️ 目前沒有{company}的預測數據，請稍後再試。"
 
