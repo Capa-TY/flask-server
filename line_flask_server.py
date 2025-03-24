@@ -42,7 +42,7 @@ def get_openrouter_response(user_message):
     data = {
         "model": "google/gemma-3-27b-it:free",  # 可以更換其他模型
         "messages": [
-        {"role": "system", "content": "你是一位專業的財經顧問，擅長股市分析與技術分析，能夠簡潔有力的分析與回答問題。"},
+        {"role": "system", "content": "你是一位專業的財經顧問，擅長股市分析與技術分析，能夠快速簡潔的分析與回答問題。"},
         {"role": "user", "content": user_message}
         ],
         "temperature": 0.7    #代表AI回應的隨機性，值越高他越有創意
@@ -91,7 +91,7 @@ def handle_message(event):
     }
     matched_stock=None
     for company,stock_code in stock_mapping.items():
-        if company in user_message and "預測" in user_message:
+        if company in user_message and "預測" in user_message:#設定關鍵字回覆
             matched_stock=stock_code
             break
     #如果有匹配的公司，就去 Firebase 讀取股價預測
