@@ -7,7 +7,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import requests  # 用於呼叫 OpenRouter API
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,timezone
 
 # 初始化 Firebase
 cred = credentials.Certificate("stockgpt-150d0-firebase-adminsdk-fbsvc-9ea0d3c5ec.json")  # 替換為你的密鑰
@@ -69,7 +69,8 @@ def callback():
 
     return "OK", 200
 
-today = datetime.now()
+zone=timezone(timedelta(hours=8))
+today = datetime.now(zone)
 today_str = today.strftime("%Y-%m-%d")
 tomorrow_str = (today + timedelta(days=1)).strftime("%m月%d日")
 # 處理來自 LINE 的訊息
@@ -78,7 +79,7 @@ def handle_message(event):
     user_id = event.source.user_id
     user_message = event.message.text.strip()
 
-    # 存入 Firebase Firestore
+    # userid存入 Firebase Firestore
     doc_ref = db.collection("users").document(user_id)
     doc_ref.set({
         "message": user_message
