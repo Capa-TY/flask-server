@@ -10,7 +10,8 @@ import json
 from datetime import datetime, timedelta,timezone
 
 # 初始化 Firebase
-cred = credentials.Certificate("stockgpt-150d0-firebase-adminsdk-fbsvc-9ea0d3c5ec.json")  # 替換為你的密鑰
+firebase_creds=json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
+cred = credentials.Certificate(firebase_creds)  # 替換為你的密鑰
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -69,7 +70,7 @@ def callback():
 
     return "OK", 200
 
-zone=timezone(timedelta(hours=8))
+zone=timezone(timedelta(hours=8))#時區設為台灣
 today = datetime.now(zone)
 today_str = today.strftime("%Y-%m-%d")
 tomorrow_str = (today + timedelta(days=1)).strftime("%m月%d日")
