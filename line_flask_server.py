@@ -70,8 +70,8 @@ def callback():
 
     return "OK", 200
 
-zone=timezone(timedelta(hours=8))#時區設為台灣
-today = datetime.now(zone)
+#zone=timezone(timedelta(hours=8))#時區設為台灣
+today = datetime.now()
 today_str = today.strftime("%Y-%m-%d")
 tomorrow_str = (today + timedelta(days=1)).strftime("%m月%d日")
 # 處理來自 LINE 的訊息
