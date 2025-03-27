@@ -1,11 +1,12 @@
 import os
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore,storage
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import requests  # 用於呼叫 OpenRouter API
+import matplotlib.pyplot as plt
 import json
 from datetime import datetime, timedelta,timezone
 
@@ -33,6 +34,45 @@ handler = WebhookHandler(LINE_CHANNEL_SECRET)
 # OpenRouter API 設定
 OPENROUTER_API_KEY = "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"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+
+
+def get_stock_data():
+    """從 Firebase 讀取最新股價"""
+    ref = db.reference("NEW_stock_data")  # Firebase 資料路徑
+    data = ref.get()
+
+    if data:
+        days = list(range(1, len(data["real_prices"]) + 1))
+        real_prices = data["real_prices"][-14:]
+        predicted_prices = data["predicted_prices"][-14:]
+        return days, real_prices, predicted_prices
+    else:
+        print("⚠️ 沒有找到股價數據！")
+        return [], [], []
+#畫圖比較預測和正確的收盤價
+def generate_stock_chart():
+    days, real_prices, predicted_prices = get_stock_data()
+    if not days:
+        print("⚠️ 沒有數據，無法生成圖表！")
+        return
+    # 畫折線圖
+    plt.figure(figsize=(8, 4))
+    plt.plot(days, real_prices, label="真實收盤價", marker="o", linestyle="-", color="blue")
+    plt.plot(days, predicted_prices, label="模型預測", marker="s", linestyle="--", color="red")
+    # 加標籤
+    plt.xlabel("天數")
+    plt.ylabel("股價")
+    plt.title("預測股價 vs. 真實收盤價")
+    plt.legend()
+    plt.grid(True)
+
+    # 存成圖片
+    plt.savefig("stock_prediction.png")
+    plt.close()
+
+    print("✅ 圖表已更新：stock_prediction.png")
+
+
 
 def get_openrouter_response(user_message):
     """向 OpenRouter 發送請求，獲取 AI 產生的回應"""
@@ -100,7 +140,7 @@ def handle_message(event):
             break
     #如果有匹配的公司，就去 Firebase 讀取股價預測
     if matched_stock:
-        doc_ref=db.collection("stock_predictions").document(matched_stock)
+        doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
         doc=doc_ref.get()
         
         if doc.exists:
