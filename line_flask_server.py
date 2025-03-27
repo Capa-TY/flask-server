@@ -43,7 +43,7 @@ def get_openrouter_response(user_message):
     data = {
         "model": "google/gemma-3-27b-it:free",  # 可以更換其他模型
         "messages": [
-        {"role": "system", "content": "你是一位專業的財經顧問，擅長股市分析與技術分析，能夠快速簡潔的分析在十行內回答問題。"},
+        {"role": "system", "content": "你是一位親切專業的財經顧問，擁有豐富的投資經驗和市場洞察力。你的特點是用溫和鼓勵、淺顯易懂的語言，將複雜的股市分析轉化為一般投資人能快速理解的觀點"},
         {"role": "user", "content": user_message}
         ],
         "temperature": 0.7    #代表AI回應的隨機性，值越高他越有創意
