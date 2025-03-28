@@ -145,7 +145,7 @@ def handle_message(event):
         doc=doc_ref.get()
         
         if doc.exists:
-            prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")
+            prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")#抓predicted_price欄位
             #date=doc.to_dict().get("last_updated", "無法獲取預測數據")#如果成功獲取到值，則將其賦值給變數 date。果文件中不存在 "last_updated" 欄位，則將 date 設定為預設值 "無法獲取預測數據"。
             sentiment_ref=db.collection("news").document(company_name)
             sentiment=sentiment_ref.get()
@@ -167,6 +167,7 @@ def handle_message(event):
         
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="🤖請稍候 問題分析中...\n"))
         reply_text = get_openrouter_response(user_message)
 
     # 回應使用者
