@@ -155,11 +155,11 @@ def handle_message(event):
                 print(f"⚠️ 沒有找到新聞情緒數據！")
                 sentiment_score=0
             if -0.5<sentiment_score<0:
-                result="經整合分析，今日新聞較消極、負面📉"
+                result="經整合分析，今日新聞較消極、負面📉😭😭"
             elif sentiment_score==0:
-                result = "經整合分析，今日新聞情緒中立"
+                result = "經整合分析，今日新聞情緒中立⚖️"
             elif 0<sentiment_score<0.5:
-                 result="經整合分析，今日新聞較積極、正面📈"
+                result="經整合分析，今日新聞較積極、正面📈😄😄"
             
             reply_text = f"🗓️今天是{today_str}\n今天{company_name}的情緒分數為{sentiment_score}\n📊{result}\n{company_name}預測的股價為：\n{prediction} 元"
         else:
@@ -167,7 +167,6 @@ def handle_message(event):
         
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="🤖請稍候 問題分析中...\n"))
         reply_text = get_openrouter_response(user_message)
 
     # 回應使用者
