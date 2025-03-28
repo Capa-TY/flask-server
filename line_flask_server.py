@@ -114,6 +114,7 @@ zone=timezone(timedelta(hours=8))#時區設為台灣
 today = datetime.now(zone)
 today_str = today.strftime("%Y-%m-%d")
 tomorrow_str = (today + timedelta(days=1)).strftime("%m月%d日")
+yesterday_str = (today - timedelta(days=1)).strftime("%Y-%m-%d")
 # 處理來自 LINE 的訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -140,7 +141,7 @@ def handle_message(event):
             break
     #如果有匹配的公司，就去 Firebase 讀取股價預測
     if matched_stock:
-        doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
+        doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(yesterday_str)
         doc=doc_ref.get()
         
         if doc.exists:
