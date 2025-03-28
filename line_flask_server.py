@@ -141,7 +141,7 @@ def handle_message(event):
             break
     #如果有匹配的公司，就去 Firebase 讀取股價預測
     if matched_stock:
-        doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(yesterday_str)
+        doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
         doc=doc_ref.get()
         
         if doc.exists:
