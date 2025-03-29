@@ -141,6 +141,7 @@ def handle_message(event):
             break
     #如果有匹配的公司，就去 Firebase 讀取股價預測
     if matched_stock:
+        print(f"📌 LINE Bot 查詢的日期：{today_str}")#測試日期
         doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
         doc=doc_ref.get()
         
