@@ -35,7 +35,11 @@ handler = WebhookHandler(LINE_CHANNEL_SECRET)
 OPENROUTER_API_KEY = "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"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
+def get_today_str():#抓最新日期
+    return datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
 
+
+# 畫圖用
 def get_stock_data():
     """從 Firebase 讀取最新股價"""
     ref = db.reference("NEW_stock_data")  # Firebase 資料路徑
@@ -110,16 +114,13 @@ def callback():
 
     return "OK", 200
 
-zone=timezone(timedelta(hours=8))#時區設為台灣
-today = datetime.now(zone)
-today_str = today.strftime("%Y-%m-%d")
-tomorrow_str = (today + timedelta(days=1)).strftime("%m月%d日")
-yesterday_str = (today - timedelta(days=1)).strftime("%Y-%m-%d")
+
 # 處理來自 LINE 的訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_id = event.source.user_id
     user_message = event.message.text.strip()
+    today_str = get_today_str()  # 每次查詢時重新計算今天的日期
 
     # userid存入 Firebase Firestore
     doc_ref = db.collection("users").document(user_id)
@@ -155,11 +156,11 @@ def handle_message(event):
             else:
                 print(f"⚠️ 沒有找到新聞情緒數據！")
                 sentiment_score=0
-            if -0.5<sentiment_score<0:
+            if  sentiment_score<0:
                 result="經整合分析，今日新聞較消極、負面📉😭😭"
             elif sentiment_score==0:
                 result = "經整合分析，今日新聞情緒中立⚖️"
-            elif 0<sentiment_score<0.5:
+            elif 0<sentiment_score:
                 result="經整合分析，今日新聞較積極、正面📈😄😄"
             
             reply_text = f"🗓️今天是{today_str}\n今天{company_name}的情緒分數為{sentiment_score}\n📊{result}\n{company_name}預測的股價為：\n{prediction} 元"
