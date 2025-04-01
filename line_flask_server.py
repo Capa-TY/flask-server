@@ -136,7 +136,7 @@ def handle_message(event):
     company_name=None
     matched_stock=None
     for company,stock_code in stock_mapping.items():
-        if company in user_message and "預測" in user_message:#設定關鍵字回覆
+        if  "查詢中" in user_message:#設定關鍵字回覆
             matched_stock=stock_code
             company_name=company
             break
