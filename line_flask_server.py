@@ -135,7 +135,7 @@ def handle_message(event):
         reply_text = get_openrouter_response(user_message)
         
     encoded_path = urllib.parse.quote(f"prediction_plots/{matched_stock}.png", safe='')
-    image_url = f"https://firebasestorage.googleapis.com/v0/b/stockgpt-150d0.appspot.com/o/{encoded_path}?alt=media"
+    image_url = f"https://i.imgur.com/260fj3F.png"
 
     # 回應使用者
     #line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
