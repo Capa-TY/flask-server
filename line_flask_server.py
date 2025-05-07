@@ -4,7 +4,7 @@ from firebase_admin import credentials, firestore,storage
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage ,ImageSendMessage
 import requests  # 用於呼叫 OpenRouter API
 import matplotlib.pyplot as plt
 import json
@@ -37,44 +37,6 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 def get_today_str():#抓最新日期
     return datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
-
-
-# 畫圖用
-def get_stock_data():
-    """從 Firebase 讀取最新股價"""
-    ref = db.reference("NEW_stock_data")  # Firebase 資料路徑
-    data = ref.get()
-
-    if data:
-        days = list(range(1, len(data["real_prices"]) + 1))
-        real_prices = data["real_prices"][-14:]
-        predicted_prices = data["predicted_prices"][-14:]
-        return days, real_prices, predicted_prices
-    else:
-        print("⚠️ 沒有找到股價數據！")
-        return [], [], []
-#畫圖比較預測和正確的收盤價
-def generate_stock_chart():
-    days, real_prices, predicted_prices = get_stock_data()
-    if not days:
-        print("⚠️ 沒有數據，無法生成圖表！")
-        return
-    # 畫折線圖
-    plt.figure(figsize=(8, 4))
-    plt.plot(days, real_prices, label="真實收盤價", marker="o", linestyle="-", color="blue")
-    plt.plot(days, predicted_prices, label="模型預測", marker="s", linestyle="--", color="red")
-    # 加標籤
-    plt.xlabel("天數")
-    plt.ylabel("股價")
-    plt.title("預測股價 vs. 真實收盤價")
-    plt.legend()
-    plt.grid(True)
-
-    # 存成圖片
-    plt.savefig("stock_prediction.png")
-    plt.close()
-
-    print("✅ 圖表已更新：stock_prediction.png")
 
 
 
@@ -170,9 +132,19 @@ def handle_message(event):
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
         reply_text = get_openrouter_response(user_message)
-
+    image_url = f"https://storage.googleapis.com/stockgpt-150d0.appspot.com/prediction_plots/{matched_stock}.png"
     # 回應使用者
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+    #line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+    line_bot_api.reply_message(
+    event.reply_token,
+    [#把訊息（文字、圖片）放進 一個 list 中，作為「一個參數」傳進去才符合格式
+        TextSendMessage(text=reply_text),
+        ImageSendMessage(
+            original_content_url=image_url,
+            preview_image_url=image_url
+        )
+    ]
+)
 
 # 啟動 Flask 伺服器
 if __name__ == "__main__":
