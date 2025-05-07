@@ -9,6 +9,7 @@ import requests  # 用於呼叫 OpenRouter API
 import matplotlib.pyplot as plt
 import json
 from datetime import datetime, timedelta,timezone
+import urllib.parse
 
 # 初始化 Firebase
 firebase_creds=json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
@@ -132,7 +133,10 @@ def handle_message(event):
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
         reply_text = get_openrouter_response(user_message)
-    image_url = f"https://storage.googleapis.com/stockgpt-150d0.appspot.com/prediction_plots/{matched_stock}.png"
+        
+    encoded_path = urllib.parse.quote(f"prediction_plots/{matched_stock}.png", safe='')
+    image_url = f"https://firebasestorage.googleapis.com/v0/b/stockgpt-150d0.appspot.com/o/{encoded_path}?alt=media"
+
     # 回應使用者
     #line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     line_bot_api.reply_message(
