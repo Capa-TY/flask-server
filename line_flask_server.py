@@ -6,7 +6,6 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage ,ImageSendMessage
 import requests  # 用於呼叫 OpenRouter API
-import matplotlib.pyplot as plt
 import json
 from datetime import datetime, timedelta,timezone
 import urllib.parse
