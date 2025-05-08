@@ -1,7 +1,7 @@
 import os
 import firebase_admin
 from firebase_admin import credentials, firestore,storage
-from flask import Flask, request, abort
+from flask import Flask, request, abort,jsonify
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage ,ImageSendMessage
@@ -20,10 +20,16 @@ db = firestore.client()
 # 初始化 Flask
 app = Flask(__name__)
 
+# 啟動時讀入 JSON
+with open("image_urls.json", "r") as f:
+    image_urls = json.load(f)
+
 # 添加根路徑路由
 @app.route("/")
 def home():
     return "Welcome to my Flask app on Render!"
+def index():
+    return "Hello! 用 /get_image/<stock_id> 來查圖網址"
 
 # LINE Bot 設定
 LINE_ACCESS_TOKEN = "u0JN7NJkL2RuZ3N9zxys5CvUJjsb8ScXfpKkoClrl2CjHFIBGGicZ7MYf5/N1to+5CUl+zYwCMHvjTTtrl+sc1+r2uV1LKEwE+EqISi1bkOpw6l5xvEVsQZiz/7PG/vrqSUKXMQNufLxpGoSP+6AiAdB04t89/1O/w1cDnyilFU="
@@ -60,6 +66,16 @@ def get_openrouter_response(user_message):
         return response.json()["choices"][0]["message"]["content"]
     else:
         return "抱歉，我無法處理您的請求。"
+
+@app.route("/get_image/<stock_id>")
+def get_image(stock_id):
+    url = image_urls.get(stock_id)
+    if url:
+        return jsonify({"stock_id": stock_id, "url": url})
+    else:
+        return jsonify({"error": "找不到這張圖"}), 404
+
+
 
 # 設定 Webhook 端點
 @app.route("/callback", methods=["POST"])
@@ -129,26 +145,39 @@ def handle_message(event):
             reply_text = f"🗓️今天是{today_str}\n今天{company_name}的情緒分數為{sentiment_score}\n📊{result}\n{company_name}預測的股價為：\n{prediction} 元"
         else:
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，需等待晚間美股🇺🇸收盤進行數據整合，請於早上八點🕗後再嘗試💬。"
-        
+    
+        flask_api = f"https://flask-server-6l3o.onrender.com/get_image/{matched_stock}"
+
+        try:
+            res = requests.get(flask_api)
+            if res.status_code == 200:
+                image_url = res.json()["url"]
+            else:
+                image_url = None
+        except Exception as e:
+            image_url = None
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
         reply_text = get_openrouter_response(user_message)
         
-    encoded_path = urllib.parse.quote(f"prediction_plots/{matched_stock}.png", safe='')
-    image_url = f"https://i.imgur.com/260fj3F.png"
-
     # 回應使用者
     #line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
-    line_bot_api.reply_message(
-    event.reply_token,
-    [#把訊息（文字、圖片）放進 一個 list 中，作為「一個參數」傳進去才符合格式
-        TextSendMessage(text=reply_text),
-        ImageSendMessage(
-            original_content_url=image_url,
-            preview_image_url=image_url
-        )
-    ]
-)
+
+    if image_url:
+        line_bot_api.reply_message(
+            event.reply_token,
+            [
+                TextSendMessage(text=reply_text),
+                ImageSendMessage(
+                    original_content_url=image_url,
+                    preview_image_url=image_url
+            )
+        ]
+    )
+    else:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+
+
 
 # 啟動 Flask 伺服器
 if __name__ == "__main__":
