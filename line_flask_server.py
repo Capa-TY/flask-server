@@ -156,7 +156,7 @@ def handle_message(event):
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，需等待晚間美股🇺🇸收盤進行數據整合，請於早上八點🕗後再嘗試💬。"
     
         json_url = "https://raw.githubusercontent.com/Capa-TY/flask-server/main/static/data/image_urls.json"
-
+    
         try:
             res = requests.get(json_url, timeout=5) 
             if res.status_code ==  200:
@@ -166,7 +166,7 @@ def handle_message(event):
                 print("失敗，狀態碼：",res.status_code)
                 image_url = None
         except requests.exceptions.Timeout:
-            print("Request timed out")
+            print("Request timed out ")
             image_url = None
         except Exception as  e:
             print(f"Error: {e}")
