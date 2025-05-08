@@ -150,7 +150,7 @@ def handle_message(event):
 
         try:
             res = requests.get(flask_api)
-            if res.status_code == 200:
+            if res.status_code ==  200:
                 image_url = res.json()["url"]
             else:
                 image_url = None
