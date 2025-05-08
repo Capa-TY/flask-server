@@ -156,7 +156,7 @@ def handle_message(event):
         flask_api = f"https://flask-server-6l3o.onrender.com/get_image/{matched_stock}"
 
         try:
-            res = requests.get(flask_api, timeout=10) 
+            res = requests.get(flask_api, timeout=20) 
             if res.status_code ==  200:
                 image_url = res.json().get("url") 
             else:
