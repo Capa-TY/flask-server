@@ -78,7 +78,7 @@ def get_image(stock_id):
     if url:
         return jsonify({"stock_id": stock_id, "url": url})
     else:
-        return jsonify({"error": "找不到這張圖"}), 404
+        return jsonify({"error": "找不到這張圖"}),  404
 
 
 
