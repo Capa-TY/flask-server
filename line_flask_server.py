@@ -73,8 +73,9 @@ def get_image(stock_id):
             image_urls = json.load(f)
     except FileNotFoundError:
         return jsonify({"error": "找不到圖片列表檔案"}), 500
-
+    print(f"Looking for {stock_id} in image_urls") 
     url = image_urls.get(stock_id)
+    print(f"Found URL: {url}") 
     if url:
         return jsonify({"stock_id": stock_id, "url": url})
     else:
@@ -191,6 +192,7 @@ def handle_message(event):
         ]
     )
     else:
+        print("No image URL found.") 
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
 
