@@ -149,12 +149,12 @@ def handle_message(event):
         flask_api = f"https://flask-server-6l3o.onrender.com/get_image/{matched_stock}"
 
         try:
-            res = requests.get(flask_api)
+            res = requests.get(flask_api) 
             if res.status_code ==  200:
                 image_url = res.json()["url"]
             else:
                 image_url = None
-        except Exception as e:
+        except Exception as  e:
             image_url = None
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
