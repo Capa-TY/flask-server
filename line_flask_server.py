@@ -155,12 +155,12 @@ def handle_message(event):
         else:
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，需等待晚間美股🇺🇸收盤進行數據整合，請於早上八點🕗後再嘗試💬。"
     
-        flask_api = f"https://flask-server-6l3o.onrender.com/get_image/{matched_stock}"
+        json_url = "https://raw.githubusercontent.com/Capa-TY/flask-server/main/static/data/image_urls.json"
 
         try:
-            res = requests.get(flask_api, timeout=5) 
+            res = requests.get(json_url, timeout=5) 
             if res.status_code ==  200:
-                image_url = res.json().get("url")
+                image_url = res.json().get(matched_stock)
                 print("取得網址：",image_url)
             else:
                 print("失敗，狀態碼：",res.status_code)
