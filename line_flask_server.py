@@ -20,8 +20,8 @@ db = firestore.client()
 app = Flask(__name__)
 
 # 啟動時讀入 JSON
-#with open("image_urls.json", "r") as f:
-    #image_urls = json.load(f)
+with open("image_urls.json", "r") as f:
+    image_urls = json.load(f)
 
 # 添加根路徑路由
 @app.route("/")
