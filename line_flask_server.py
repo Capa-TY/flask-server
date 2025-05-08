@@ -126,12 +126,13 @@ def handle_message(event):
             company_name=company
             break
     #如果有匹配的公司，就去 Firebase 讀取股價預測
-
+    image_url = None
+    
     if matched_stock:
         print(f"📌 LINE Bot 查詢的日期：{today_str}")#測試日期
         doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
         doc=doc_ref.get()
-        image_url = None
+        
 
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")#抓predicted_price欄位
@@ -174,7 +175,7 @@ def handle_message(event):
     
     # 回應使用者
     #line_bot_api.reply_  message(event.reply_token, TextSendMessage(text=reply_text))
-
+    
     if image_url:
         line_bot_api.reply_message(
             event.reply_token,
