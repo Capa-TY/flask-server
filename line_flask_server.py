@@ -126,12 +126,13 @@ def handle_message(event):
             company_name=company
             break
     #如果有匹配的公司，就去 Firebase 讀取股價預測
-    
+
     if matched_stock:
         print(f"📌 LINE Bot 查詢的日期：{today_str}")#測試日期
         doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
         doc=doc_ref.get()
-        
+        image_url = None
+
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")#抓predicted_price欄位
             #date=doc.to_dict().get("last_updated", "無法獲取預測數據")#如果成功獲取到值，則將其賦值給變數 date。果文件中不存在 "last_updated" 欄位，則將 date 設定為預設值 "無法獲取預測數據"。
