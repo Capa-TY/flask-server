@@ -20,8 +20,8 @@ db = firestore.client()
 app = Flask(__name__)
 
 # 啟動時讀入 JSON
-with open("image_urls.json", "r") as f:
-    image_urls = json.load(f)
+#with open("image_urls.json", "r") as f:
+    #image_urls = json.load(f)
 
 # 添加根路徑路由
 @app.route("/")
@@ -68,11 +68,16 @@ def get_openrouter_response(user_message):
 
 @app.route("/get_image/<stock_id>")
 def get_image(stock_id):
-    url = image_urls.get(stock_id)
-    if url:
-        return jsonify({"stock_id": stock_id, "url": url})
-    else:
-        return jsonify({"error": "找不到這張圖"}), 404
+    try:
+        with open("image_urls.json") as f:
+            image_urls = json.load(f)
+        url = image_urls.get(stock_id)
+        if url:
+            return jsonify({"stock_id": stock_id, "url": url})
+        else:
+            return jsonify({"error": "找不到這張圖"}), 404
+    except Exception as e:
+        return jsonify({"error": f"讀取失敗：{str(e)}"}), 500
 
 
 
