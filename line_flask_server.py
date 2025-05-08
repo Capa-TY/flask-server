@@ -126,6 +126,7 @@ def handle_message(event):
             company_name=company
             break
     #如果有匹配的公司，就去 Firebase 讀取股價預測
+    image_url = None 
     if matched_stock:
         print(f"📌 LINE Bot 查詢的日期：{today_str}")#測試日期
         doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
@@ -165,7 +166,7 @@ def handle_message(event):
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
         reply_text = get_openrouter_response(user_message)
-        
+    
     # 回應使用者
     #line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
