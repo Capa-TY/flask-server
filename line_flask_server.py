@@ -166,7 +166,7 @@ def handle_message(event):
                 print("失敗，狀態碼：",res.status_code)
                 image_url = None
         except requests.exceptions.Timeout:
-            print("Request timed out ")
+            print("Request timed out  ")
             image_url = None
         except Exception as  e:
             print(f"Error: {e}")
