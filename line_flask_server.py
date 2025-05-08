@@ -69,15 +69,17 @@ def get_openrouter_response(user_message):
 @app.route("/get_image/<stock_id>")
 def get_image(stock_id):
     try:
-        with open("image_urls.json") as f:
+        with open("static/data/image_urls.json", "r") as f:
             image_urls = json.load(f)
-        url = image_urls.get(stock_id)
-        if url:
-            return jsonify({"stock_id": stock_id, "url": url})
-        else:
-            return jsonify({"error": "找不到這張圖"}), 404
-    except Exception as e:
-        return jsonify({"error": f"讀取失敗：{str(e)}"}), 500
+    except FileNotFoundError:
+        return jsonify({"error": "找不到圖片列表檔案"}), 500
+
+    url = image_urls.get(stock_id)
+    if url:
+        return jsonify({"stock_id": stock_id, "url": url})
+    else:
+        return jsonify({"error": "找不到這張圖"}), 404
+
 
 
 
