@@ -156,12 +156,16 @@ def handle_message(event):
         flask_api = f"https://flask-server-6l3o.onrender.com/get_image/{matched_stock}"
 
         try:
-            res = requests.get(flask_api) 
+            res = requests.get(flask_api, timeout=10) 
             if res.status_code ==  200:
-                image_url = res.json()["url"]
+                image_url = res.json().get("url") 
             else:
                 image_url = None
+        except requests.exceptions.Timeout:
+            print("Request timed out")
+            image_url = None
         except Exception as  e:
+            print(f"Error: {e}")
             image_url = None
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
