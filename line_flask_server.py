@@ -127,7 +127,7 @@ def handle_message(event):
             break
     #如果有匹配的公司，就去 Firebase 讀取股價預測
     image_url = None
-    
+
     if matched_stock:
         print(f"📌 LINE Bot 查詢的日期：{today_str}")#測試日期
         doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
@@ -158,10 +158,12 @@ def handle_message(event):
         flask_api = f"https://flask-server-6l3o.onrender.com/get_image/{matched_stock}"
 
         try:
-            res = requests.get(flask_api, timeout=20) 
+            res = requests.get(flask_api, timeout=5) 
             if res.status_code ==  200:
                 image_url = res.json().get("url")
+                print("取得網址：",image_url)
             else:
+                print("失敗，狀態碼：",res.status_code)
                 image_url = None
         except requests.exceptions.Timeout:
             print("Request timed out")
