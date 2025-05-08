@@ -17,7 +17,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 # 初始化 Flask
-app = Flask(__name__)
+app =  Flask(__name__)
 
 # 啟動時讀入 JSON
 with open("image_urls.json", "r") as f:
