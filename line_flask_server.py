@@ -31,15 +31,15 @@ def index():
     return "Hello! 用 /get_image/<stock_id> 來查圖網址"
 
 # LINE Bot 設定
-LINE_ACCESS_TOKEN = "u0JN7NJkL2RuZ3N9zxys5CvUJjsb8ScXfpKkoClrl2CjHFIBGGicZ7MYf5/N1to+5CUl+zYwCMHvjTTtrl+sc1+r2uV1LKEwE+EqISi1bkOpw6l5xvEVsQZiz/7PG/vrqSUKXMQNufLxpGoSP+6AiAdB04t89/1O/w1cDnyilFU="
-LINE_CHANNEL_SECRET = "751e2fb4f0320a37836474ce86d89eb9"
+LINE_ACCESS_TOKEN =  os.getenv("LINE_ACCESS_TOKEN")
+LINE_CHANNEL_SECRET =  os.getenv("LINE_CHANNEL_SECRET")
 
 line_bot_api = LineBotApi(LINE_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
 # OpenRouter API 設定
-OPENROUTER_API_KEY = "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"
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_URL = os.getenv("OPENROUTER_URL")
 
 def get_today_str():#抓最新日期
     return datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
@@ -180,7 +180,7 @@ def handle_message(event):
     #line_bot_api.reply_  message(event.reply_token, TextSendMessage(text=reply_text))
     
     if image_url:
-        print(f"Sending image: {image_url}")
+        #print(f"Sending image: {image_url}")
         line_bot_api.reply_message(
             event.reply_token,
             [
