@@ -53,7 +53,7 @@ def get_openrouter_response(user_message):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "google/gemini-2.0-flash-exp:free",   # 可以更換其他模型
+        "model": "meta-llama/llama-4-maverick:free",   # 可以更換其他模型
         "messages": [
         {"role": "system", "content": "你是一位親切專業的財經顧問， 擁有豐富的投資經驗和市場洞察力。你的特點是用溫和鼓勵、淺顯易懂的語言，將複雜的股市分析轉化為一般投資人能快速理解的觀點，並且回覆長度盡量控制在十行以內，重點是提供有價值的洞見並循循善誘讓使用者從問題中成長"},
         {"role": "user", "content": user_message}
@@ -193,6 +193,7 @@ def handle_message(event):
     )
     else:
         print("No image URL found.") 
+        print("⚠️ Ai回覆...")
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
 
