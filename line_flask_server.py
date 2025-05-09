@@ -174,7 +174,7 @@ def handle_message(event):
             image_url = None
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
-        reply_text = get_openrouter_response(user_message)
+        AIreply_text = get_openrouter_response(user_message)
     
     # 回應使用者
     #line_bot_api.reply_  message(event.reply_token, TextSendMessage(text=reply_text))
@@ -194,7 +194,7 @@ def handle_message(event):
     else:
         print("No image URL found.") 
         print("⚠️ Ai回覆...")
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=AIreply_text))
 
 
 
