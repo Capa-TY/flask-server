@@ -159,7 +159,7 @@ def handle_message(event):
         json_url = "https://raw.githubusercontent.com/Capa-TY/flask-server/main/static/data/image_urls.json"
     
         try:
-            res = requests.get(json_url, timeout=5) 
+            res = requests.get(json_url, timeout=10) 
             if res.status_code ==  200:
                 image_url = res.json().get(matched_stock)
                 print("取得網址：",image_url)
