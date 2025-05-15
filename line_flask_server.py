@@ -71,11 +71,18 @@ def get_openrouter_response(user_message):
         "temperature": 0.7    #代表AI回應的隨機性，值越高他越有創意
     }
     response = requests.post(OPENROUTER_URL, json=data, headers=headers)
-    if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"]
+    try:
+        res_json = response.json()
+    except Exception as e:
+        print(f"無法解析 JSON：{e}")
+        print(response.text)
+        return "⚠️ 抱歉，API 回傳格式異常，請稍後再試。"
+
+    if response.status_code == 200 and "choices" in res_json:
+        return res_json["choices"][0]["message"]["content"]
     else:
-        print(response.status_code)
-        return "抱歉，我無法處理您的請求。"
+        print("OpenRouter 錯誤：", res_json)
+        return "⚠️ 抱歉，目前無法獲得回應，可能是伺服器忙碌或金鑰問題。"
 
 
 
