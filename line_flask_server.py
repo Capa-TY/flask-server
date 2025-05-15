@@ -20,8 +20,8 @@ bucket = storage.bucket('stockgpt-150d0.firebasestorage.app')
 app =  Flask(__name__)
 
 # 啟動時讀入 JSON
-with open("static/data/image_urls.json", "r") as f:
-    image_urls = json.load(f)
+#with open("static/data/image_urls.json", "r") as f:
+    #image_urls = json.load(f)
 
 # 添加根路徑路由
 @app.route("/")
@@ -153,7 +153,7 @@ def handle_message(event):
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，需等待晚間美股🇺🇸收盤進行數據整合，請於早上八點🕗後再嘗試💬。"
     
         #json_url = "https://raw.githubusercontent.com/Capa-TY/flask-server/main/static/data/image_urls.json"
-        image_url = get_image_url_from_storage(stock_code)
+        image_url = get_image_url_from_storage(matched_stock)
        
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
