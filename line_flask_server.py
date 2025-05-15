@@ -15,8 +15,7 @@ firebase_creds=json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
 cred = credentials.Certificate(firebase_creds)  # 替換為你的密鑰
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-bucket = storage.bucket()
-
+bucket = storage.bucket('stockgpt-150d0.firebasestorage.app')
 # 初始化 Flask
 app =  Flask(__name__)
 
