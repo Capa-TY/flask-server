@@ -15,6 +15,7 @@ firebase_creds=json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
 cred = credentials.Certificate(firebase_creds)  # 替換為你的密鑰
 firebase_admin.initialize_app(cred)
 db = firestore.client()
+bucket = storage.bucket()
 
 # 初始化 Flask
 app =  Flask(__name__)
@@ -44,7 +45,17 @@ OPENROUTER_URL = os.getenv("OPENROUTER_URL")
 def get_today_str():#抓最新日期
     return datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
 
-
+def get_image_url_from_storage(stock_id):
+    """從 Firebase Storage 獲取圖片 URL"""
+    try:
+        blob = bucket.blob(f"{stock_id}_predict_vs_close.png")
+        if blob.exists():
+            blob.make_public()
+            return blob.public_url
+        return None
+    except Exception as e:
+        print(f"Error getting image URL: {e}")
+        return None
 
 def get_openrouter_response(user_message):
     """向 OpenRouter 發送請求，獲取 AI 產生的回應"""
@@ -157,22 +168,9 @@ def handle_message(event):
         else:
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，需等待晚間美股🇺🇸收盤進行數據整合，請於早上八點🕗後再嘗試💬。"
     
-        json_url = "https://raw.githubusercontent.com/Capa-TY/flask-server/main/static/data/image_urls.json"
-    
-        try:
-            res = requests.get(json_url, timeout=10) 
-            if res.status_code ==  200:
-                image_url = res.json().get(matched_stock)
-                print("取得網址：",image_url)
-            else:
-                print("失敗，狀態碼：",res.status_code)
-                image_url = None
-        except requests.exceptions.Timeout:
-            print("Request timed  out  ")
-            image_url = None
-        except Exception as  e:
-            print(f"Error: {e}")
-            image_url = None
+        #json_url = "https://raw.githubusercontent.com/Capa-TY/flask-server/main/static/data/image_urls.json"
+        image_url = get_image_url_from_storage(stock_code)
+       
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
         reply_text = get_openrouter_response(user_message)
