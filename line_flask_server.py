@@ -85,24 +85,19 @@ def get_openrouter_response(user_message):
         return "⚠️ 抱歉，目前無法獲得回應，可能是伺服器忙碌或金鑰問題。"
 
 
-
-
 # 設定 Webhook 端點
 @app.route("/callback", methods=["POST"])
 def callback():
     if not request.is_json:
         abort(400)
-
     signature = request.headers["X-Line-Signature"]
     body = request.get_data(as_text=True)
-
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
 
     return "OK", 200
-
 
 # 處理來自 LINE 的訊息
 @handler.add(MessageEvent, message=TextMessage)
@@ -137,7 +132,6 @@ def handle_message(event):
         doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
         doc=doc_ref.get()
         
-
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")#抓predicted_price欄位
             #date=doc.to_dict().get("last_updated", "無法獲取預測數據")#如果成功獲取到值，則將其賦值給變數 date。果文件中不存在 "last_updated" 欄位，則將 date 設定為預設值 "無法獲取預測數據"。
@@ -155,7 +149,7 @@ def handle_message(event):
             elif 0<sentiment_score:
                 result="經整合分析，今日新聞較積極、正面📈😄😄"
             
-            reply_text = f"🗓️今天是{today_str}\n今天{company_name}的情緒分數為{sentiment_score}\n📊{result}\n{company_name}預測的股價為：\n{prediction} 元"
+            reply_text = f"🗓️今天是{today_str}\n今天{company_name}的情緒分數為{sentiment_score}\n📊{result}\n{company_name}預測的股價為：\n{prediction} 元\n以下為近兩週交易日的真實vs預測股價比對圖供您參考👀"
         else:
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，需等待晚間美股🇺🇸收盤進行數據整合，請於早上八點🕗後再嘗試💬。"
     
@@ -169,7 +163,7 @@ def handle_message(event):
     # 回應使用者
     #line_bot_api.reply_  message(event.reply_token, TextSendMessage(text=reply_text))
     
-    if image_url:
+    if image_url:#if 有圖
         #print(f"Sending image: {image_url}")
         line_bot_api.reply_message(
             event.reply_token,
