@@ -149,7 +149,7 @@ def handle_message(event):
             elif 0<sentiment_score:
                 result="經整合分析，今日新聞較積極、正面📈😄😄"
             
-            reply_text = f"🗓️今天是{today_str}\n今天{company_name}的情緒分數為{sentiment_score}\n📊{result}\n{company_name}預測的股價為：\n{prediction} 元\n以下為近兩週交易日的真實vs預測股價比對圖供您參考👀"
+            reply_text = f"🗓️今天是{today_str}\n今天{company_name}的情緒分數為{sentiment_score}\n📊{result}\n{company_name}預測的股價為：\n{prediction} 元\n附圖為近兩週交易日的真實vs預測股價比對圖"
         else:
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，需等待晚間美股🇺🇸收盤進行數據整合，請於早上八點🕗後再嘗試💬。"
     
