@@ -56,6 +56,20 @@ def get_image_url_from_storage(stock_id):
         print(f"Error getting image URL: {e}")
         return None
 
+def get_volume_url_from_storage():
+    """從 Firebase Storage 獲取圖片 URL"""
+    try:
+        blob = bucket.blob(f"volume_comparison.png")
+        if blob.exists():
+            blob.make_public()
+            return blob.public_url
+        return None
+    except Exception as e:
+        print(f"Error getting image URL: {e}")
+        return None
+
+
+
 def get_openrouter_response(user_message):
     """向 OpenRouter 發送請求，獲取 AI 產生的回應"""
     headers = {
@@ -124,8 +138,12 @@ def handle_message(event):
             matched_stock=stock_code
             company_name=company
             break
+
+
+            
     #如果有匹配的公司，就去 Firebase 讀取股價預測
     image_url = None
+    volume_url=None
 
     if matched_stock:
         print(f"📌 LINE Bot 查詢的日期：{today_str}")#測試日期
@@ -155,11 +173,15 @@ def handle_message(event):
     
         #json_url = "https://raw.githubusercontent.com/Capa-TY/flask-server/main/static/data/image_urls.json"
         image_url = get_image_url_from_storage(matched_stock)
-       
+    
+    
     # 如沒有出現關鍵字，就取得 AI 生成的回覆
     else:
         reply_text = get_openrouter_response(user_message)
-    
+
+
+    if  "成交量排名查詢" in user_message:
+        volume_url=get_volume_url_from_storage()
     # 回應使用者
     #line_bot_api.reply_  message(event.reply_token, TextSendMessage(text=reply_text))
     
@@ -172,6 +194,16 @@ def handle_message(event):
                 ImageSendMessage(
                     original_content_url=image_url,
                     preview_image_url=image_url
+            )
+        ]
+    )
+    elif volume_url:
+        line_bot_api.reply_message(
+            event.reply_token,
+            [
+                ImageSendMessage(
+                    original_content_url=volume_url,
+                    preview_image_url=volume_url
             )
         ]
     )
