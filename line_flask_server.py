@@ -185,7 +185,7 @@ def handle_message(event):
     # 回應使用者
     #line_bot_api.reply_  message(event.reply_token, TextSendMessage(text=reply_text))
     
-    if image_url:#if 有圖
+    if image_url: #if 有圖
         #print(f"Sending image: {image_url}")
         line_bot_api.reply_message(
             event.reply_token,
