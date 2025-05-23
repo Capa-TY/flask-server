@@ -180,7 +180,7 @@ def handle_message(event):
         reply_text = get_openrouter_response(user_message)
 
 
-    if  "成交量排名查詢" in user_message:
+    if  "成交量比較查詢" in user_message:
         volume_url=get_volume_url_from_storage()
     # 回應使用者
     #line_bot_api.reply_  message(event.reply_token, TextSendMessage(text=reply_text))
