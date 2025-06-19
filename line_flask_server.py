@@ -211,7 +211,7 @@ def handle_message(event):
         ]
     )
     else:
-        print("No image URL found.") 
+        print("No image URL  found.") 
         print("⚠️ Ai回覆...")
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
