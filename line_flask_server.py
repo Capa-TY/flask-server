@@ -1,6 +1,6 @@
 import os
 import firebase_admin
-from firebase_admin import credentials, firestore,storage
+from firebase_admin import credentials, firestore
 from flask import Flask, request, abort,jsonify
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -15,7 +15,7 @@ firebase_creds=json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
 cred = credentials.Certificate(firebase_creds)  # 替換為你的密鑰
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-bucket = storage.bucket('stockgpt-150d0.firebasestorage.app')
+
 # 初始化 Flask
 app =  Flask(__name__)
 
@@ -46,6 +46,8 @@ def get_today_str():#抓最新日期
 
 def get_image_url_from_storage(stock_id):
     """從 Firebase Storage 獲取圖片 URL"""
+    from firebase_admin import storage
+    bucket = storage.bucket('stockgpt-150d0.firebasestorage.app')
     try:
         blob = bucket.blob(f"{stock_id}_predict_vs_close.png")
         if blob.exists():
@@ -84,7 +86,7 @@ def get_openrouter_response(user_message):
         ],
         "temperature": 0.7    #代表AI回應的隨機性，值越高他越有創意
     }
-    response = requests.post(OPENROUTER_URL, json=data, headers=headers)
+    response = requests.post(OPENROUTER_URL, json=data, headers=headers,timeout=10)
     try:
         res_json = response.json()
     except Exception as e:
