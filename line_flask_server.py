@@ -158,7 +158,7 @@ def handle_message(event):
             if sentiment.exists:
                 sentiment_score=sentiment.to_dict().get("daily_averages",{}).get(today_str, 0)
             else:
-                print(f"⚠️ 沒有找到新聞情緒數據！")
+                print(f"⚠️沒有找到新聞情緒數據！")
                 sentiment_score=0
             if  sentiment_score<0:
                 result="經整合分析，今日新聞較消極、負面📉😭😭"
