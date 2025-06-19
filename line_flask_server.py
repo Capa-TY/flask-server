@@ -26,7 +26,7 @@ app =  Flask(__name__)
 # 添加根路徑路由
 @app.route("/")
 def home():
-    return "Welcome to my Flask app on Render!"
+    return "Welcome  to my Flask app on Render!"
 def index():
     return "Hello! 用 /get_image/<stock_id> 來查圖網址"
 
