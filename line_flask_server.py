@@ -74,7 +74,7 @@ def get_volume_url_from_storage():
 
 
 def get_openrouter_response(user_message):
-    """向 OpenRouter 發送請求，獲取 AI 產生的回應"""
+    """向 OpenRouter 發送請求，獲取 AI 產生的回應 """
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json"
