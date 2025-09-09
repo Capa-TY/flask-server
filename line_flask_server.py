@@ -147,6 +147,12 @@ def handle_message(event):
     #如果有匹配的公司，就去 Firebase 讀取股價預測
     image_url = None
     volume_url=None
+    
+    ADJUSTMENTS = {
+        "2317.TW": 1.2,
+        "2330.TW": 1.125,
+        "2303.TW": 1.01,
+    }
 
     if matched_stock:
         print(f"📌 LINE Bot 查詢的日期：{today_str}")#測試日期
@@ -155,6 +161,10 @@ def handle_message(event):
         
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")#抓predicted_price欄位
+
+            if matched_stock in ADJUSTMENTS:
+                adjustment_factor = ADJUSTMENTS[matched_stock]
+                prediction *= adjustment_factor
             #date=doc.to_dict().get("last_updated", "無法獲取預測數據")#如果成功獲取到值，則將其賦值給變數 date。果文件中不存在 "last_updated" 欄位，則將 date 設定為預設值 "無法獲取預測數據"。
             sentiment_ref=db.collection("news").document(company_name)
             sentiment=sentiment_ref.get()
