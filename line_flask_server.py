@@ -7,6 +7,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage ,ImageSendMessage
 import requests  # 用於呼叫 OpenRouter API
 import json
+import time
 from datetime import datetime, timedelta,timezone
 import urllib.parse
 
@@ -53,7 +54,8 @@ def get_image_url_from_storage(stock_id):
         blob = bucket.blob(f"{stock_id}_predict_vs_close.png")
         if blob.exists():
             blob.make_public()
-            return blob.public_url
+            #return blob.public_url
+            return f"{blob.public_url}?v={int(time.time())}"
         return None
     except Exception as e:
         print(f"Error getting image URL: {e}")
