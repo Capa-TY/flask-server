@@ -194,10 +194,10 @@ def handle_message(event):
         doc=doc_ref.get()
         
         rag_result = get_latest_groq_result(company_name)
-        if rag_result:
-            rag_result = rag_result[2:]  # 從第三個字開始
-        else:
-            rag_result = "暫無資料"
+        # if rag_result:
+        #     rag_result = rag_result[2:]  # 從第三個字開始
+        # else:
+        #     rag_result = "暫無資料"
 
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")#抓predicted_price欄位
@@ -218,7 +218,7 @@ def handle_message(event):
             #     result="經整合分析，今日新聞較積極、正面📈😄😄"
 
             
-            reply_text = f"🗓️今天是{today_str}\n📊{rag_result}\n{company_name}預測的股價為：\n{prediction} 元\n附圖為近兩週交易日的真實vs預測股價比對圖"
+            reply_text = f"🗓️今天是{today_str}\n📊RAG分析報告:\n{rag_result}\n{company_name}預測的股價為：\n{prediction} 元\n附圖為近兩週交易日的真實vs預測股價比對圖"
         else:
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，需等待晚間美股🇺🇸收盤進行數據整合，請於早上八點🕗後再嘗試💬。"
     
