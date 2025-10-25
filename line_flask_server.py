@@ -20,6 +20,13 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 bucket = storage.bucket('stockgpt-150d0.firebasestorage.app')
 
+# === 第二個 Firebase ===
+other_creds = json.loads(os.getenv("OTHER_FIREBASE_CREDENTIALS_JSON"))
+cred_other = credentials.Certificate(other_creds)
+app_other = firebase_admin.initialize_app(cred_other, name="other")
+db_other = firestore.client(app=app_other)
+
+
 # 初始化 Flask
 app =  Flask(__name__)
 
@@ -104,6 +111,29 @@ def get_openrouter_response(user_message):
         return "⚠️ 抱歉，目前無法獲得回應，可能是伺服器忙碌或金鑰問題。"
 
 
+# === 公司名 → Groq 結果集合名對應 ===
+groq_mapping = {
+    "台積電": "Groq_result",
+    "鴻海": "Groq_result_Foxxcon",
+    "聯電": "Groq_result_UMC"
+}
+
+# === 抓取最新 Groq 結果（可指定公司名）===
+def get_latest_groq_result(company_name=None):
+    # 依公司名決定要抓的集合
+    collection_name = groq_mapping.get(company_name, "Groq_result")
+    collection_ref = db_other.collection(collection_name)
+
+    # 取該集合中最新一筆（文件 ID 為日期格式）
+    docs = collection_ref.order_by("__name__", direction=firestore.Query.DESCENDING).limit(1).stream()
+
+    for doc in docs:
+        result_text = doc.to_dict().get("result", "")
+        return result_text
+
+    return None, None
+
+
 # 設定 Webhook 端點
 @app.route("/callback", methods=["POST"])
 def callback():
@@ -156,25 +186,32 @@ def handle_message(event):
         doc_ref=db.collection("stock_predictions").document(matched_stock).collection("daily_prediction").document(today_str)
         doc=doc_ref.get()
         
+        rag_result = get_latest_groq_result(company_name)
+        if rag_result:
+            rag_result = rag_result[2:]  # 從第三個字開始
+        else:
+            rag_result = "暫無資料"
+
         if doc.exists:
             prediction=doc.to_dict().get("predicted_price", "無法獲取預測數據")#抓predicted_price欄位
 
             #date=doc.to_dict().get("last_updated", "無法獲取預測數據")#如果成功獲取到值，則將其賦值給變數 date。果文件中不存在 "last_updated" 欄位，則將 date 設定為預設值 "無法獲取預測數據"。
             sentiment_ref=db.collection("news").document(company_name)
             sentiment=sentiment_ref.get()
-            if sentiment.exists:
-                sentiment_score=sentiment.to_dict().get("daily_averages",{}).get(today_str, 0)
-            else:
-                print(f"⚠️沒有找到新聞情緒數據！")
-                sentiment_score=0
-            if  sentiment_score<0:
-                result="經整合分析，今日新聞較消極、負面📉😭😭"
-            elif sentiment_score==0:
-                result = "經整合分析，今日新聞情緒中立⚖️"
-            elif 0<sentiment_score:
-                result="經整合分析，今日新聞較積極、正面📈😄😄"
+            # if sentiment.exists:
+            #     sentiment_score=sentiment.to_dict().get("daily_averages",{}).get(today_str, 0)
+            # else:
+            #     print(f"⚠️沒有找到新聞情緒數據！")
+            #     sentiment_score=0
+            # if  sentiment_score<0:
+            #     result="經整合分析，今日新聞較消極、負面📉😭😭"
+            # elif sentiment_score==0:
+            #     result = "經整合分析，今日新聞情緒中立⚖️"
+            # elif 0<sentiment_score:
+            #     result="經整合分析，今日新聞較積極、正面📈😄😄"
+
             
-            reply_text = f"🗓️今天是{today_str}\n📊{result}\n{company_name}預測的股價為：\n{prediction} 元\n附圖為近兩週交易日的真實vs預測股價比對圖"
+            reply_text = f"🗓️今天是{today_str}\n📊{rag_result}\n{company_name}預測的股價為：\n{prediction} 元\n附圖為近兩週交易日的真實vs預測股價比對圖"
         else:
             reply_text = f"⚠️ 目前沒有{company_name}的預測數據，需等待晚間美股🇺🇸收盤進行數據整合，請於早上八點🕗後再嘗試💬。"
     
