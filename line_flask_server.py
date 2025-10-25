@@ -120,18 +120,25 @@ groq_mapping = {
 
 # === 抓取最新 Groq 結果（可指定公司名）===
 def get_latest_groq_result(company_name=None):
-    # 依公司名決定要抓的集合
-    collection_name = groq_mapping.get(company_name, "Groq_result")
-    collection_ref = db_other.collection(collection_name)
+    try:
+        collection_name = groq_mapping.get(company_name, "Groq_result")
+        collection_ref = db_other.collection(collection_name)
 
-    # 取該集合中最新一筆（文件 ID 為日期格式）
-    docs = collection_ref.order_by("__name__", direction=firestore.Query.DESCENDING).limit(1).stream()
+        # 用 __name__ 反序排序，取最後一筆
+        docs = list(collection_ref.stream())
+        if not docs:
+            return None
 
-    for doc in docs:
-        result_text = doc.to_dict().get("result", "")
-        return result_text
+        # 取最後一筆文件（假設名稱為日期）
+        latest_doc = sorted(docs, key=lambda d: d.id, reverse=True)[0]
+        result_text = latest_doc.to_dict().get("result", "")
 
-    return None, None
+        # 取第三個字之後
+        return result_text[2:] if len(result_text) > 2 else result_text
+    except Exception as e:
+        print(f"Error fetching Groq result: {e}")
+        return None
+
 
 
 # 設定 Webhook 端點
