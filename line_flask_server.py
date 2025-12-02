@@ -105,7 +105,10 @@ def get_openrouter_response(user_message):
         return "⚠️ 抱歉，API 回傳格式異常，請稍後再試。"
 
     if response.status_code == 200 and "choices" in res_json:
-        return res_json["choices"][0]["message"]["content"]
+        #return res_json["choices"][0]["message"]["content"]
+        reply = res_json["choices"][0]["message"]["content"]
+        reply = reply.replace("*", "")   #  移除所有星號
+        return reply
     else:
         print("OpenRouter 錯誤：", res_json)
         return "⚠️ 抱歉，目前無法獲得回應，可能是伺服器忙碌或金鑰問題。"
