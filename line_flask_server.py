@@ -146,17 +146,29 @@ def get_latest_groq_result(company_name=None):
 
 # 設定 Webhook 端點
 @app.route("/callback", methods=["POST"])
-def callback():
-    if not request.is_json:
-        abort(400)
-    signature = request.headers["X-Line-Signature"]
-    body = request.get_data(as_text=True)
-    try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
-        abort(400)
+# def callback():
+#     if not request.is_json:
+#         abort(400)
+#     signature = request.headers["X-Line-Signature"]
+#     body = request.get_data(as_text=True)
+#     try:
+#         handler.handle(body, signature)
+#     except InvalidSignatureError:
+#         abort(400)
 
-    return "OK", 200
+#     return "OK", 200
+
+def callback():
+    try:
+        body = request.get_json()
+        events = body.get("events", [])
+        for event in events:
+            text = event.get("message", {}).get("text", "")
+            print(f"收到訊息: {text}")
+        return "OK", 200
+    except Exception as e:
+        print(e)
+        return "Error", 500
 
 # 處理來自 LINE 的訊息
 @handler.add(MessageEvent, message=TextMessage)
