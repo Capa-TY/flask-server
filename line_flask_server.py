@@ -177,9 +177,13 @@ def handle_message(event):
     user_message = event.message.text.strip()
     today_str = get_today_str()  # 每次查詢時重新計算今天的日期
 
+    profile = line_bot_api.get_profile(user_id)
+    username = profile.display_name
+
     # userid存入 Firebase Firestore
     doc_ref = db.collection("users").document(user_id)
     doc_ref.set({
+        "username":username,
         "message": user_message
     }, merge=True)
     
